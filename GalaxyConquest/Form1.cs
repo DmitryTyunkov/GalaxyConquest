@@ -90,7 +90,7 @@ namespace GalaxyConquest
             tech_label.Visible = false;
             this.MouseWheel += new MouseEventHandler(this_MouseWheel); // for resizing of galaxy at event change wheel mouse
             waveOutDevice = new WaveOutEvent();
-            audioFileReader = new AudioFileReader("Sounds/Untitled45.mp3");
+            audioFileReader = new AudioFileReader(@"Sounds/Untitled45.mp3");
             waveOutDevice.Init(audioFileReader);
             waveOutDevice.Play();
             statusStrip1.Items[0].Text = "Выбран 1 флот";
