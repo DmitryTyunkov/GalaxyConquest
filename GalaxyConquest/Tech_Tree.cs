@@ -33,7 +33,7 @@ namespace GalaxyConquest
         {
             InitializeComponent();
 
-            StreamReader tech_str = new StreamReader("Tech.txt");
+            StreamReader tech_str = new StreamReader(@"Resources\Tech.txt");
             int counter = 0;
             string line;
 
