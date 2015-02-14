@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
@@ -15,8 +15,8 @@ namespace GalaxyConquest
         public List<List<string>> tech_subtech = new List<List<string>>();
 
         public float scaling = 1f;
-        public int horizontal = 0;
-        public int vertical = 0;
+        public float horizontal = 0;
+        public float vertical = 0;
 
         public int mouseX;
         public int mouseY;
@@ -32,6 +32,8 @@ namespace GalaxyConquest
         public Tech_Tree()
         {
             InitializeComponent();
+
+            this.MouseWheel += new MouseEventHandler(this_MouseWheel);
 
             StreamReader tech_str = new StreamReader(@"Resources\Tech.txt");
             int counter = 0;
@@ -122,26 +124,15 @@ namespace GalaxyConquest
         {
             if (e.Button == MouseButtons.Left)
             {
-                int dx = mouseX - e.X;
-                int dy = mouseY - e.Y;
-                if (dx > 0)
-                {
-                    horizontal -= (5 + (int)(1 / scaling) * 10);
-                }
-                if (dx < 0)
-                {
-                    horizontal += (5 + (int)(1 / scaling) * 10);
-                }
-                if (dy > 0)
-                {
-                    vertical -= (5 + (int)(1 / scaling) * 10);
-                }
-                if (dy < 0)
-                {
-                    vertical += (5 + (int)(1 / scaling) * 10);
-                }
+                horizontal += (e.X - mouseX) / scaling;
+                vertical += (e.Y - mouseY) / scaling;
+
                 mouseX = e.X;
                 mouseY = e.Y;
+
+                centerX = TechTreeImage.Width / 2 / scaling + horizontal;
+                centerY = TechTreeImage.Height / 2 / scaling + vertical;
+
                 Redraw();
             }
         }
@@ -178,6 +169,32 @@ namespace GalaxyConquest
             }
         }
 
+
+        private void this_MouseWheel(object sender, MouseEventArgs e) // resizing of galaxy at event change wheel mouse
+        {
+            if (e.Delta > 0)
+            {
+                if (scaling >= 10)
+                    return;
+                else
+                {
+                    scaling += 0.2f;
+                }
+            }
+            else
+            {
+                if (scaling <= 0.4)
+                    return;
+                else
+                {
+                    scaling -= 0.2f;
+                }
+            }
+            centerX = TechTreeImage.Width / 2 / scaling + horizontal;
+            centerY = TechTreeImage.Height / 2 / scaling + vertical;
+            Redraw();
+        }
+
         private void TechTreeImage_MouseClick(object sender, MouseEventArgs e)
         {
             Font fnt = new Font("Consolas", 10.0F);
@@ -187,11 +204,11 @@ namespace GalaxyConquest
                     for (int j = 0; j < tech_subtech[i].Count; j++)
                     {
                         Size string_lenght = TextRenderer.MeasureText(tech_subtech[i][j], fnt);
-                        
-                        if (e.X < centerX + 300 * j + (string_lenght.Width + 2) && 
-                            e.X > centerX + 300 * j - 2 &&
-                            e.Y < centerY + 300 - 30 * i + (string_lenght.Height + 2) && 
-                            e.Y > centerY + 300 - 30 * i - 2)
+
+                        if (e.X < (centerX + 300 * j + (string_lenght.Width + 2)) * scaling &&
+                            e.X > (centerX + 300 * j - 2) * scaling &&
+                            e.Y < (centerY + 300 - 30 * i + (string_lenght.Height + 2)) * scaling && 
+                            e.Y > (centerY + 300 - 30 * i - 2) * scaling)
                         {
                             tech_clicked = i;
                             subtech_clicked = j;
